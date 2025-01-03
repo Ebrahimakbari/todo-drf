@@ -120,12 +120,3 @@ class TaskView(viewsets.ModelViewSet):
     queryset = Task.objects.all().order_by('-created')
     serializer_class = TaskSerializer
     permission_classes = [IsOwnerOrReadonly,]
-
-
-{
-    "user_id": 18,
-    "username": "ebrahim",
-    "email": "y560mia3@gmail.com",
-    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM1OTI0ODkwLCJpYXQiOjE3MzU5MjMwOTAsImp0aSI6IjA0MWYzY2E2YTNjZTQyNmE4ZGIxZDdiYzYyYWFlMGNiIiwidXNlcl9pZCI6MTh9.sdT8v9ZYQUoivXUfz5QDk4-J90ZXiZY3zqkXxVVshiY",
-    "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTczNjAwOTQ5MCwiaWF0IjoxNzM1OTIzMDkwLCJqdGkiOiI1NDE4MTJhZmY5ZDQ0ZWUwYTcxYzgyZmZjMTcwMTU3ZCIsInVzZXJfaWQiOjE4fQ.fTNSkO0txCCHANS46a7gyxzwaY7B_D6aubNoun1o440"
-}
