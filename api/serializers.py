@@ -66,6 +66,18 @@ class UserLoginSerializer(serializers.Serializer):
         raise serializers.ValidationError('incorrect password!!')
 
 
+class LogoutSerializer(serializers.Serializer):
+    refresh_token = serializers.CharField()
+
+
+class UserLoginResponseSerializer(serializers.Serializer):
+    user_id = serializers.IntegerField()
+    username = serializers.CharField()
+    email = serializers.EmailField()
+    access_token = serializers.CharField()
+    refresh_token = serializers.CharField()
+
+
 class UserResetPasswordSerializer(serializers.Serializer):
     email = serializers.EmailField()
 
@@ -82,13 +94,14 @@ class UserResetPasswordSerializer(serializers.Serializer):
 
 
 class ChangePasswordSerializer(serializers.Serializer):
+    user_id = serializers.IntegerField()
+    token = serializers.CharField()
     password = serializers.CharField()
     password2 = serializers.CharField()
     
     def create(self, validated_data):
-        user_id = self.context.get('user_id')
+        user = User.objects.get(pk=validated_data['user_id'],token=validated_data['token'])
         password = validated_data.get('password2')
-        user = User.objects.get(pk=user_id)
         user.set_password(password)
         user.save()
         return user
@@ -99,6 +112,22 @@ class ChangePasswordSerializer(serializers.Serializer):
         if password != password2:
             raise serializers.ValidationError('mismatch passwords!!')
         return attrs
+
+class PasswordTokenSerializer(serializers.Serializer):
+    user_id = serializers.IntegerField()
+    token = serializers.CharField()
+    
+    def validate(self, attrs):
+        user = User.objects.filter(pk=self.user_id)
+        token = attrs['token']
+        if user.exists():
+            user = user.first()
+            if user.token != token:
+                raise serializers.ValidationError("invalid token !!")
+            attrs['user'] = user
+            return attrs
+        raise serializers.ValidationError('invalid user id !!')
+
 
 class CustomUserSerializer(serializers.ModelSerializer):
     full_name = serializers.CharField(source="get_full_name", read_only=True)
