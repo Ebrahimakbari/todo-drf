@@ -6,12 +6,14 @@ from .managers import CustomUserManager
 from django.core.mail import send_mail
 # Create your models here.
 
+
 class CustomUser(AbstractUser):
     email = models.EmailField(unique=True)
-    phone_number = models.IntegerField()
+    phone_number = models.IntegerField(blank=True,null=True)
     avatar = models.ImageField(blank=True, null=True)
-    token = models.CharField(max_length=100)
+    token = models.CharField(max_length=100, blank=True, null=True)
     is_active = models.BooleanField(default=False)
+    
     objects = CustomUserManager()
     
     USERNAME_FIELD = "email"
@@ -43,7 +45,7 @@ class Task(models.Model):
     title = models.CharField(max_length=50)
     context = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
-    modified = models.DateTimeField(auto_now=False)
+    modified = models.DateTimeField(auto_now=True)
     is_done = models.BooleanField(default=False)
     
     class Meta:
