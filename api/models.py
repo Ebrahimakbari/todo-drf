@@ -32,9 +32,9 @@ class CustomUser(AbstractUser):
         reset_token = str(uuid.uuid4())
         self.token = reset_token
         self.save()
-        reset_link = f"http://{request.get_host()}/api-v1/account/{action}/{reset_token}/"
-        subject = 'Activate User Account'
-        message = f'Click the link to reset your password: {reset_link}'
+        reset_link = f"http://{request.get_host()}/{action}/{self.pk}/{reset_token}/"
+        subject = f'{action} User Account'
+        message = f'Click the link to for {action} : {reset_link}'
         from_email = settings.DEFAULT_FROM_EMAIL
         send_mail(subject, message, from_email, [self.email])
 

@@ -11,14 +11,17 @@ User = get_user_model()
 class UserCreationSerializer(serializers.Serializer):
     email = serializers.EmailField()
     username = serializers.CharField()
-    password = serializers.CharField()
-    password2 = serializers.CharField()
+    password = serializers.CharField(write_only=True)
+    password2 = serializers.CharField(write_only=True)
     
     def create(self, validated_data):
         request = self.context.get('request')
-        validated_data.pop('password2')
-        user = User.objects.create(**validated_data)
-        user.send_email(request, action='activate')
+        user = User.objects.create_user(
+            username=validated_data['username'],
+            email=validated_data['email'],
+            password=validated_data['password'],
+        )
+        user.send_email(request, action='activate-account')
         return user
     
     def validate(self, attrs):
@@ -34,7 +37,7 @@ class UserEmailTokenSerializer(serializers.Serializer):
     token = serializers.CharField()
     
     def create(self, validated_data):
-        user = User.objects.filter(pk=self.user_id)
+        user = User.objects.filter(pk=validated_data['user_id'])
         token = validated_data['token']
         if user.exists():
             user = user.first()
@@ -87,7 +90,7 @@ class UserResetPasswordSerializer(serializers.Serializer):
         user = User.objects.filter(email=email)
         if user.exists():
             user = user.first()
-            user.send_email(request, action="reset-password")
+            user.send_email(request, action="password-reset")
             attrs['user'] = user
             return attrs
         raise serializers.ValidationError('user with provided email does not exists!!')
@@ -118,7 +121,7 @@ class PasswordTokenSerializer(serializers.Serializer):
     token = serializers.CharField()
     
     def validate(self, attrs):
-        user = User.objects.filter(pk=self.user_id)
+        user = User.objects.filter(pk=attrs['user_id'])
         token = attrs['token']
         if user.exists():
             user = user.first()
